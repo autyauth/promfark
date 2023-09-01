@@ -1,0 +1,119 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a {
+  color: #0077cc;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 16px;
+  line-height: inherit;
+}
+
+.footer {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+
+#mainnav {
+  background-color: rgba(0, 0, 0, 0.3);
+
+}
+
+.banner-image {
+  /*background-image: url('https://img.freepik.com/free-photo/chicken-wings-barbecue-sweetly-sour-sauce-picnic-summer-menu-tasty-food-top-view-flat-lay_2829-6471.jpg?w=2000') !important;
+  */
+  background-image: url('https://media.discordapp.net/attachments/905446050347761714/1097545282960494612/d36d462db827833805497d9ea78a1343.jpg');
+  background-size: cover;
+}
+
+.nav-item {
+  border-radius: 20px;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 0, 0, 1);
+  color: white;
+}
+
+#mainnav.active {
+  background-color: rgba(9, 68, 9, 1)
+}
+
+.nav-item.active:hover {
+  background-color: rgba(243, 156, 18, 1);
+  color: black !important;
+}
+
+footer {
+  width: 100%;
+  padding: 5px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #25252554;
+  color: #fcfcf7;
+  text-align: center;
+
+}
+
+footer p {
+  font-family: 'Maitree', serif;
+  font-size: 10px
+}
+
+.container {
+  margin-top: 100px;
+}
+
+#LogoutBTN {
+  color: rgb(255, 24, 24);
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+}
+
+
+@media (width<=720) {}

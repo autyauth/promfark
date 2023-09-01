@@ -1,0 +1,151 @@
+#CT {
+    /* background-color: #F2B350; */
+    /* background-color: rgb(253, 201, 89); */
+    border-radius: 0px 0px 50px 50px;
+    background-color: rgba(253, 201, 89, 0.15);
+    margin-bottom: 60px;
+}
+
+#depositing {
+    background-color: #511D1B;
+}
+
+#depositing:hover {
+    background-color: #86373E;
+}
+
+#postBox {
+    padding: 20px;
+}
+
+#box {
+    padding: 5px;
+    border: 3px solid #AA9894;
+    border-radius: 15px;
+}
+
+.profile {
+    border-radius: 100px;
+    filter: drop-shadow(3px 4px 2px gray);
+    width: 100px;
+    height: 100px;
+}
+
+small {
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+}
+
+span {
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+}
+
+.accept {
+    text-align: center;
+    cursor: pointer;
+    background-color: #511D1B;
+    color: rgb(255, 255, 255);
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.accept:hover {
+    transform: scale(1.05, 1.1);
+    background-color: #eea25b;
+
+}
+
+.editPost {
+    margin-top: 10px;
+}
+
+.edit {
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    background-color: inherit;
+}
+
+.edit img {
+    width: 30px;
+    height: auto;
+
+}
+
+.edit img:hover {
+    filter: brightness(120%);
+}
+
+.remove {
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    background-color: inherit;
+}
+
+.remove img {
+    width: 30px;
+    height: auto;
+}
+
+.remove img:hover {
+    filter: brightness(200%);
+}
+
+.likeFrame {
+    width: 100px;
+}
+
+.like {
+    width: 45px;
+
+}
+
+.qr {
+    width: 70%;
+}
+
+.confirmBox {
+    text-align: center;
+}
+
+.confirmBox span {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.time {
+    font-size: 12px;
+}
+
+.status-radio {
+    margin-left: 50%;
+
+}
+
+.waitB {
+    padding-right: 20%;
+}
+
+.wait-btn {
+    accent-color: green;
+    ;
+}
+
+.processB {
+    padding-right: 20%;
+}
+
+.process-btn {
+
+    accent-color: yellow;
+}
+
+.finish-btn {
+
+    accent-color: red;
+}
+
+body {
+    background-image: url('https://i.pinimg.com/564x/d6/aa/f2/d6aaf2c1b0402124aea5423898a7ef4c.jpg');
+    background-size: cover;
+}

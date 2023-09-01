@@ -1,0 +1,96 @@
+body {
+    height: 100vh;
+
+}
+
+.contain {
+    width: 100%;
+    padding-top: 110px;
+    padding-bottom: 70px;
+    min-height: 100vh;
+    background-image: url("https://media.discordapp.net/attachments/879723819621814342/1101828154252853348/RegisterBackground-02-01.jpg?width=1920&height=1080");
+    background-size: cover;
+    align-items: center;
+}
+
+.signup-container {
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 45%;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 0 20px rgb(78, 78, 78);
+    backdrop-filter: blur(35px);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px #573300;
+    color: #ff9900;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color: #aaa;
+}
+
+input {
+    display: block;
+    width: 85%;
+    padding: 10px;
+    padding-left: 40px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #777;
+    background-color: #fff;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+div button {
+    margin-top: 10px;
+    background-color: #F09711;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #fead32;
+}
+
+label {
+    font-weight: 700;
+
+}
+
+@media (max-width: 840px) {
+    .signup-container {
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0 0 20px rgb(78, 78, 78);
+        backdrop-filter: blur(35px);
+    }
+}

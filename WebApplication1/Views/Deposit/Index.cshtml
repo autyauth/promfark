@@ -1,0 +1,399 @@
+@{
+    ViewData["Title"] = "ฝากซื้อ";
+}
+@using System.Globalization;
+@using WebApplication1.ViewModels
+@model (IEnumerable<Deposit>, CreateDepositViewModel, CreateCommentDepositViewModel)
+
+<link rel="stylesheet" href="~/css/Deposit.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@500&display=swap" rel="stylesheet">
+
+<div class="container-fluid" id="CT">
+    <div class="row">
+        <a asp-action="CreateDeposit" class="btn btn-primary btn-lg float-end" id="depositing">ฝากซื้อ</a>
+        @foreach (var item in Model.Item1.Reverse())
+        {
+            <div id="postBox" class="col-sm-12 col-lg-5 col-xl-4 ">
+                <div id="box" class="card mb-4 box-shadow position-relative">
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name == item.Email))
+                    {
+                        <div class="editPost row flex-row-reverse position-absolute top-0 end-0">
+                            <div class="col-7">
+                                <form asp-controller="Deposit" asp-action="DeleteDeposit" method="post">
+                                    <input type="hidden" name="depositId" value="@item.Id" />
+                                    <button type="submit" class="remove">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/189/189690.png" alt="">
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-4">
+                                <a a asp-controller="Deposit" asp-action="EditDeposit" asp-route-id="@item.Id" class="edit">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3597/3597075.png" alt="">
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    @if (item.CommentDeposits != null && item.CommentDeposits.Any())
+                    {
+
+                        @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name ==
+                       item.CommentDeposits.FirstOrDefault().Email))
+                        {
+                            <div class="status-radio d-flex justify-content-around position-absolute top-0 p-1">
+                                @* wait *@
+                                <div class="waitB">
+                                    <input id="wait-btn-@item.Id" class="wait-btn" type="radio" name="radio-status-@item.Id" onclick="status('@item.Id','รอ')">
+                                </div>
+
+                                @* process *@
+                                <div class="processB">
+                                    <input id="process-btn-@item.Id" class="process-btn" type="radio" name="radio-status-@item.Id" onclick="status('@item.Id','กำลังไปส่ง')">
+                                </div>
+
+                                @* finish *@
+                                <div class="finishB">
+                                    <input id="finish-btn-@item.Id" class="finish-btn" type="radio" name="radio-status-@item.Id" onclick="status('@item.Id','ส่งแล้ว')">
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="status-radio d-flex justify-content-around position-absolute top-0 p-1">
+                                @* wait *@
+                                <div class="waitB">
+                                    <input id="wait-btn-@item.Id" class="wait-btn" type="radio" name="radio-status-@item.Id" value="other">
+                                </div>
+
+                                @* process *@
+                                <div class="processB">
+                                    <input id="process-btn-@item.Id" class="process-btn" type="radio" name="radio-status-@item.Id" value="other">
+                                </div>
+
+                                @* finish *@
+                                <div class="finishB">
+                                    <input id="finish-btn-@item.Id" class="finish-btn" type="radio" name="radio-status-@item.Id" value="other">
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    
+                    <div class="card-body">
+                        <small class="time position-absolute top-0 start-1" style="margin-top: 5px;color: grey">
+                            @{
+                                var x = DateTime.Now - item.CreatedTime;
+                                string y = "";
+                                if (x.Minutes <= 0 && x.Hours <= 0 && x.Days <= 0)
+                                {
+                                    y = "โพสต์เมื่อซักครู่";
+                                }
+                                else if (x.Hours <= 0 && x.Days <= 0)
+                                {
+                                    y = string.Format("โพสต์เมื่อ {0} นาทีที่แล้ว", x.Minutes);
+                                }
+                                else if (x.Hours > 0 && x.Days <= 0)
+                                {
+                                    y = string.Format("โพสต์เมื่อ {0} ชั่วโมงที่แล้ว", x.Hours);
+                                }
+                                else if (x.Days > 0 && x.Days <= 7)
+                                {
+                                    y = string.Format("โพสต์เมื่อ {0} วันที่แล้ว ", x.Days);
+                                }
+                                else if (x.Days <= 365)
+                                {
+                                    y = item.CreatedTime.ToString("โพสต์เมื่อ dd MMMM เวลา HH:mm น.", new CultureInfo("th-TH"));
+                                }
+                                else
+                                {
+                                    y = item.CreatedTime.ToString("โพสต์เมื่อ dd MMMM yyyy เวลา HH:mm น.", new
+                                    CultureInfo("th-TH"));
+                                }
+                            }
+                            @y
+                            &#128337;
+                        </small>
+                        <div style="margin-top: 10px;">
+                        <div id="status-@item.Id-Post" class="position-absolute" style="color: white;" >
+                                    @if (item.StatePost == "รอ")
+                                    {
+                                        <small>รอ</small>
+                                    }
+                                    else if (item.StatePost == "กำลังไปส่ง")
+                                    {
+                                        <small>กำลังไปส่ง</small>
+                                    }
+                                    else if (item.StatePost == "ส่งแล้ว")
+                                    {
+                                        <small>ส่งแล้ว</small>
+                                    }
+                            </div>
+                        <div class="row align-items-center">
+                            
+                            <div class="col-sm-12 col-md-4">
+                                <img class="profile" src="@item.Icon" style="margin-bottom: 10px;">
+                            </div>
+
+                            <div class="col-sm-12 col-md-8">
+                                <div class="row align-items-center">
+                                    <div class="col-12">
+                                        <span>@item.FirstName @item.LastName</span> @* ชื่อ - สกุล*@
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-12">
+                                        <span>โทร : @item.Phone</span> @* เบอร์โทร *@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-items-end">
+                                <div class="col-12" style="margin-top:5px;">
+                                    <span>ไปซื้อที่ไหน : @item.Place </span>
+                                </div>
+                                <div class="col-12" style="margin-top:5px;">
+                                    <span>ไปซื้ออะไร : @item.Food</span>
+                                </div>
+                                <div class="col-12" style="margin-top:5px;">
+                                    <span>เอามาส่งที่ไหน : @item.PlaceDeliver</span>
+                                </div>
+                                <div class="col-12" style="margin-top:5px;">
+                                    <span>รับฝากได้ตั้งแต่ : @{
+                                            string b = item.CreatedTime.ToString("HH:mm น.", new CultureInfo("th-TH"));
+                                            b += " - " + item.CreatedTime.AddMinutes(item.MaxTimePose.Value).ToString("HH:mm น.", new
+                                            CultureInfo("th-TH"));
+                                        }@b
+                                    </span>
+                                </div>
+                            </div>
+                                <script>
+                                    function status(id, status) {
+                                        
+                                        $.ajax({
+                                            url: '@Url.Action("StateMainPose", "Deposit")',
+                                            data: { id: id, status: status },
+                                            type: 'POST',
+                                            success: function (result) {
+                                                console.log(result);
+                                                // Do something with the result, if needed
+                                                window.location.href = "Deposit"
+                                            },
+                                            error: function () {
+                                                console.log('Error occurred while confirming comment.');
+                                            }
+                                        });
+                                    }
+
+                                </script>
+                                <script>
+                                    if(document.getElementById("status-@item.Id-Post").innerText == "รอ"){
+                                        document.getElementById("wait-btn-@item.Id").checked = true;
+                                        if(document.getElementById("wait-btn-@item.Id").value === "other"){
+                                            document.getElementById("wait-btn-@item.Id").disabled = false;
+                                            document.getElementById("process-btn-@item.Id").disabled = true;
+                                            document.getElementById("finish-btn-@item.Id").disabled = true;
+                                        }
+                                        
+                                    }else if(document.getElementById("status-@item.Id-Post").innerText == "กำลังไปส่ง"){
+                                        document.getElementById("process-btn-@item.Id").checked = true;
+                                        if(document.getElementById("process-btn-@item.Id").value === "other"){
+                                            document.getElementById("wait-btn-@item.Id").disabled = true;
+                                            document.getElementById("process-btn-@item.Id").disabled = false;
+                                            document.getElementById("finish-btn-@item.Id").disabled = true;
+                                        }
+                                    }else{
+                                        document.getElementById("finish-btn-@item.Id").checked = true;
+                                        if(document.getElementById("finish-btn-@item.Id").value === "other"){
+                                            document.getElementById("wait-btn-@item.Id").disabled = true;
+                                            document.getElementById("process-btn-@item.Id").disabled = true;
+                                            document.getElementById("finish-btn-@item.Id").disabled = false;
+                                        }
+                                    }       
+                                </script>
+                            <div id="post-@item.Id-comments" class="p-2">
+                            @if (item.CommentDeposits != null && item.CommentDeposits.Any())
+                            {   
+                                @* <div class="row">
+                                    <div class="order_box">
+                                        <div class="card p-3 shadow-sm">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="user d-flex flex-row align-items-center">
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <small style="color: rgb(76, 158, 80);">@item.CommentDeposits.FirstOrDefault().FirstName</small>
+                                                        </div>
+                                                        <div class="col-9">
+                                                            <small class="font-weight-bold">@item.CommentDeposits.FirstOrDefault().CommentText</small>
+                                                        </div>
+                                                        <div></div>
+                                                        <div class="qr">
+                                                            <img id="Image-@item.CommentDeposits.FirstOrDefault().Id-comment" src="@item.CommentDeposits.FirstOrDefault().Image" alt="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (item.CommentDeposits.FirstOrDefault().Like == true)
+                                    {
+                                        <img class="w-25 h-25" src="https://cdn.discordapp.com/attachments/880751147449733150/1101569968333656125/pngwing.com.png" alt="">
+                                    }
+                                    @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name == item.Email))
+                                    {
+                                        <button id="confirm-@item.CommentDeposits.FirstOrDefault().Id-comments" onclick="confirmComment('@item.CommentDeposits.FirstOrDefault().Id','@item.CommentDeposits.FirstOrDefault().CommentText','@item.CommentDeposits.FirstOrDefault().FirstName','@item.CommentDeposits.FirstOrDefault().LastName','@item.CommentDeposits.FirstOrDefault().Image','@item.CommentDeposits.FirstOrDefault().Email','@item.CommentDeposits.FirstOrDefault().Like','@item.Id')">Confirm Comment</button>
+                                    }
+                                    @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name == item.CommentDeposits.FirstOrDefault().Email))
+                                    {
+                                        <form asp-controller="Deposit" asp-action="DeleteComment" method="post">
+                                            <input type="hidden" name="depositId" value="@item.CommentDeposits.FirstOrDefault().Id" />
+                                            <button type="submit" class="remove">
+                                                <img src="https://cdn-icons-png.flaticon.com/512/189/189690.png" alt="">
+                                            </button>
+                                        </form>
+                                    }
+                                        
+                                </div> *@
+
+                                <div class="row">
+                                    <div class="order_box">
+                                        <div class="card p-3 shadow-sm" id="frame-@item.CommentDeposits.FirstOrDefault().Id">
+                                            @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name ==
+                                        item.CommentDeposits.FirstOrDefault().Email))
+                                            {
+                                                <form asp-controller="Deposit" asp-action="DeleteComment" method="post"
+                                                    class="position-absolute top-0 end-0 p-1">
+                                                    <input type="hidden" name="depositId" value="@item.CommentDeposits.FirstOrDefault().Id" />
+                                                    <button type="submit" class="remove">
+                                                        <img src="https://cdn-icons-png.flaticon.com/512/189/189690.png" alt="">
+                                                    </button>
+                                                </form>
+                                            }
+                                            @if (item.CommentDeposits.FirstOrDefault().Like == true)
+                                            {
+                                                <div class="likeFrame position-absolute top-0 end-0">
+                                                    <img class="like"
+                                                        src="https://cdn.discordapp.com/attachments/880751147449733150/1101569968333656125/pngwing.com.png"
+                                                        alt="">
+                                                </div>
+                                                <script>
+                                                    document.getElementById("frame-@item.CommentDeposits.FirstOrDefault().Id").style.border = "3px solid green";
+
+                                                </script>
+                                            }
+
+
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <small style="color: rgb(76, 158, 80);">@item.CommentDeposits.FirstOrDefault().FirstName :</small>
+                                                </div>
+                                                <div class="col-5">
+                                                    <small class="font-weight-bold">@item.CommentDeposits.FirstOrDefault().CommentText</small>
+                                                </div>
+                                                <div></div>
+                                                <div class="col-12 p-1 d-flex justify-content-center">
+                                                    <img class="qr" id="Image-@item.CommentDeposits.FirstOrDefault().Id-comment" src="@item.CommentDeposits.FirstOrDefault().Image"
+                                                        alt="">
+                                                </div>
+                                                @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name ==
+                                            Model.Item2.Email))
+                                                {
+                                                    <div class="confirmBox">
+                                                    <span id="confirm-@item.CommentDeposits.FirstOrDefault().Id-comments" class="confirmText"
+                                                        onclick="confirmComment('@item.CommentDeposits.FirstOrDefault().Id','@item.CommentDeposits.FirstOrDefault().CommentText','@item.CommentDeposits.FirstOrDefault().FirstName','@item.CommentDeposits.FirstOrDefault().LastName','@item.CommentDeposits.FirstOrDefault().Image','@item.CommentDeposits.FirstOrDefault().Email','@item.CommentDeposits.FirstOrDefault().Like','@item.Id')">รับทราบ</span>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    function confirmComment(commentDepositId, CommentText, FirstName, LastName, image, email, confirm, depositId) {
+                                        $.ajax({
+                                            url: '@Url.Action("ConfirmComment", "Deposit")',
+                                            data: { commentDepositId: commentDepositId, CommentText: CommentText, FirstName: FirstName, LastName: LastName, image: image, email: email, confirm: confirm, depositId: depositId },
+                                            type: 'POST',
+                                            success: function (result) {
+                                                console.log(result);
+                                                // Do something with the result, if needed
+                                            },
+                                            error: function () {
+                                                console.log('Error occurred while confirming comment.');
+                                            }
+                                        });
+                                    }
+                                </script>
+                            }
+                            
+                        </div>
+                        </div>
+                            <hr>
+                            <div  class="accept" onclick="showComment(@item.Id@item.Id)">
+                                เดี๋ยวไปซื้อให้
+                            </div>
+                            <div id="postComment">
+                                <div id="@item.Id@item.Id" class="form-group row" style="display: none;">
+                                    <form asp-controller="Deposit" asp-action="CreateComment" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" name="depositId" value="@item.Id" />
+                                        <input type="hidden" name="email" value="@User.Identity.Name" />
+                                        <input type="hidden" name="confirm" value="false" />
+                                        <div class="form-group">
+                                            <label for="first-name">ชื่อ</label>
+                                            <input type="text" id="first-name" name="FirstName" class="form-control" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="last-name">นามสกุล</label>
+                                            <input type="text" id="last-name" name="LastName" class="form-control" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="comment-text">รายละเอียด</label>
+                                            <textarea id="comment-text" name="CommentText" class="form-control"
+                                                required></textarea>
+                                        </div>
+                                        <div>
+                                            <label for="payment">ช่องทางการชำระเงิน</label>
+                                            <input type="file" class="form-control" name="image" id="payment" placeholder="เลือกไฟล์">
+                                        </div>
+                                        <br>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <script>
+                                function loadCommentDeposits(depositId) {
+                                    $.ajax({
+                                        url: '@Url.Action("GetCommentDeposit", "Deposit")',
+                                        data: { depositId: depositId },
+                                        type: 'GET',
+                                        success: function (result) {
+                                            console.log('success.');
+                                            $('#post-' + depositId + '-comments').html(result);
+                                        },
+                                        error: function () {
+                                            console.log('Error occurred while retrieving new comments.');
+                                        }
+                                    });
+                                }
+                                function showComment(id){
+                                    console.log("click");
+                                    if(document.getElementById(id).style.display === "none"){
+                                        document.getElementById(id).style.display = "block";
+                                    }else{
+                                        document.getElementById(id).style.display = "none";
+                                    }
+                                }
+                                setInterval(function () {
+                                    loadCommentDeposits(@item.Id);
+
+                                }, 1000);
+                            </script>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>

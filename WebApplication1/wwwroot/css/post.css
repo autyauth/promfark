@@ -1,0 +1,196 @@
+﻿.profile {
+    border-radius: 100px;
+    filter: drop-shadow(3px 4px 2px gray);
+    width: 100px;
+    height: 100px;
+}
+
+#postBox {
+    padding: 20px;
+}
+
+#box {
+    padding: 5px;
+    border: 3px solid #167019;
+    border-radius: 15px;
+}
+
+p {
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    font-size: 16px;
+}
+
+span {
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    font-size: 16px;
+}
+
+
+
+small {
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+}
+
+.scan {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.scan span {
+    cursor: pointer;
+    text-decoration: underline;
+    color: black;
+}
+
+.scan span:hover {
+    color: rgb(92, 89, 89);
+}
+
+.QRcode img {
+    width: 300px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.comment {
+    text-align: center;
+    cursor: pointer;
+    background-color: #167019;
+    color: rgb(255, 255, 255);
+    border-radius: 10px;
+}
+
+.comment:hover {
+    transform: scale(1.05, 1.1);
+    background-color: #eeb35b;
+
+}
+
+.commented {
+    text-align: center;
+
+    background-color: #52823b;
+    color: rgb(255, 255, 255);
+    border-radius: 10px;
+}
+
+/* ยังนึกไม่ออกว่าเอาแบบไหนดีสำหรับช่องข้อความที่ถูกคอมเมนต์ */
+.order_box {
+    margin-top: 5px;
+}
+
+
+.btn {
+    background-color: rgb(16, 70, 19);
+    border-color: black;
+}
+
+.btn:hover {
+    background-color: rgb(76, 158, 80);
+    border-color: rgb(16, 70, 19);
+}
+
+
+.editPost {
+    margin-top: 10px;
+}
+
+.edit {
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    background-color: inherit;
+}
+
+.edit img {
+    width: 30px;
+    height: auto;
+
+}
+
+.edit img:hover {
+    filter: brightness(120%);
+}
+
+.remove {
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    background-color: inherit;
+}
+
+.remove img {
+    width: 30px;
+    height: auto;
+}
+
+.remove img:hover {
+    filter: brightness(200%);
+}
+
+.slip {
+    width: 100%;
+    height: auto;
+}
+
+.likeFrame {
+    width: 100px;
+}
+
+.like {
+    width: 45px;
+
+}
+
+.comfirm {
+    text-align: center;
+
+}
+
+#test1 span {
+    cursor: pointer;
+}
+
+#CT {
+    background-color: rgba(253, 201, 89, 0.15);
+    border-radius: 0px 0px 50px 50px;
+    margin-bottom: 60px;
+    /* backdrop-filter: blur(60px); */
+}
+
+.time {
+    font-size: 12px;
+}
+
+.status-radio {
+    margin-left: 50%;
+
+}
+
+.waitB {
+    padding-right: 20%;
+}
+
+.wait-btn {
+    accent-color: green;
+    ;
+}
+
+.processB {
+    padding-right: 20%;
+}
+
+.process-btn {
+
+    accent-color: yellow;
+}
+
+.finish-btn {
+
+    accent-color: red;
+}
+
+body {
+    background-image: url('https://i.pinimg.com/564x/d6/aa/f2/d6aaf2c1b0402124aea5423898a7ef4c.jpg');
+    background-size: cover;
+}

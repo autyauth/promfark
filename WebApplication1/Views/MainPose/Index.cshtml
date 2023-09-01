@@ -1,0 +1,398 @@
+﻿@*
+For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "รับฝาก";
+}
+@using System.Globalization;
+@using System.Security.Claims;
+@using WebApplication1.ViewModels
+@model (IEnumerable<MainPose>, CreateMainPoseViewModel, CreateCommentViewModel)
+
+@* @model IEnumerable<MainPose> *@
+
+<link rel="stylesheet" href="~/css/post.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@*<script
+src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajax-unobtrusive/3.2.6/jquery.unobtrusive-ajax.min.js"></script>*@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@500&display=swap" rel="stylesheet">
+
+<div id="CT" class="container-fluid">
+
+    <div class="row" id="testP">
+        <a asp-action="CreateMainPose" class="btn btn-primary btn-lg float-end">รับฝาก</a>
+
+        @foreach (var item in Model.Item1.Reverse())
+        {
+
+            @* info section *@
+
+            <div id="postBox" class="col-sm-12 col-lg-5 col-xl-4 ">
+
+                @* Poster'simage *@
+
+                <div id="box" class="card mb-4 box-shadow position-relative">
+
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name == item.Email))
+                    {
+
+                        <div class="editPost row flex-row-reverse position-absolute top-0 end-0">
+                            <div class="col-7">
+                                <form asp-controller="MainPose" asp-action="DeleteMainPose" method="post">
+                                    <input type="hidden" name="mainPoseId" value="@item.Id" />
+                                    <button type="submit" class="remove"><img
+                                            src="https://cdn-icons-png.flaticon.com/512/189/189690.png" alt=""></button>
+                                </form>
+                            </div>
+                            <div class="col-4">
+                                <a asp-controller="MainPose" asp-action="EditMainPose" asp-route-id="@item.Id" class="edit"><img
+                                        src="https://cdn-icons-png.flaticon.com/512/3597/3597075.png" alt="">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="status-radio d-flex justify-content-around position-absolute top-0 p-1">
+                                @* wait *@
+                                    <div class="waitB">
+                                        <input id="wait-btn-@item.Id" class="wait-btn" type="radio" name="radio-status-@item.Id"  onclick="status('@item.Id','รอ')">
+                                    </div>
+
+                                @* process *@
+                                    <div class="processB">
+                                    <input id="process-btn-@item.Id" class="process-btn" type="radio" name="radio-status-@item.Id"  onclick="status('@item.Id','กำลังไปส่ง')">
+                                    </div>
+
+                                @* finish *@
+                                    <div class="finishB">
+                                    <input  id="finish-btn-@item.Id" class="finish-btn" type="radio" name="radio-status-@item.Id"  onclick="status('@item.Id','ส่งแล้ว')">
+                                    </div>
+                        </div>
+                    }else{
+                        <div class="status-radio d-flex justify-content-around position-absolute top-0 p-1">
+                                @* wait *@
+                                    <div class="waitB">
+                                        <input id="wait-btn-@item.Id" class="wait-btn" type="radio" name="radio-status-@item.Id" value="other">
+                                    </div>
+
+                                @* process *@
+                                    <div class="processB">
+                                    <input id="process-btn-@item.Id" class="process-btn" type="radio" name="radio-status-@item.Id" value="other">
+                                    </div>
+
+                                @* finish *@
+                                    <div class="finishB">
+                                    <input  id="finish-btn-@item.Id" class="finish-btn" type="radio" name="radio-status-@item.Id" value="other">
+                                    </div>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <small class="time position-absolute top-0 start-1" style="margin-top: 5px;color: grey">
+                            @{
+                                var x = DateTime.Now - item.CreatedTime;
+                                string y = "";
+                                if (x.Minutes <= 0 && x.Hours <= 0 && x.Days <= 0)
+                                {
+                                    y = "โพสต์เมื่อซักครู่";
+                                }
+                                else if (x.Hours <= 0 && x.Days <= 0)
+                                {
+                                    y = string.Format("โพสต์เมื่อ {0} นาทีที่แล้ว", x.Minutes);
+                                }
+                                else if (x.Hours > 0 && x.Days <= 0)
+                                {
+                                    y = string.Format("โพสต์เมื่อ {0} ชั่วโมงที่แล้ว", x.Hours);
+                                }
+                                else if (x.Days > 0 && x.Days <= 7)
+                                {
+                                    y = string.Format("โพสต์เมื่อ {0} วันที่แล้ว ", x.Days);
+                                }
+                                else if (x.Days <= 365)
+                                {
+                                    y = item.CreatedTime.ToString("โพสต์เมื่อ dd MMMM เวลา HH:mm น.", new CultureInfo("th-TH"));
+                                }
+                                else
+                                {
+                                    y = item.CreatedTime.ToString("โพสต์เมื่อ dd MMMM yyyy เวลา HH:mm น.", new
+                                    CultureInfo("th-TH"));
+                                }
+                            }
+                            @y
+                            &#128337;
+                        </small>
+
+                        <div style="margin-top: 10px;">
+                            <div class="row align-items-center">
+                                <div id="status-@item.Id-Post" class="position-absolute" style="color:white;">
+                                    @if(item.StatePost == "รอ")
+                                    {
+                                        <small>รอ</small>
+                                    }else if(item.StatePost == "กำลังไปส่ง")
+                                    {
+                                        <small>กำลังไปส่ง</small>
+                                    }else if(item.StatePost == "ส่งแล้ว")
+                                    {
+                                        <small>ส่งแล้ว</small>
+                                    }
+                                </div>
+                                <div class="col-sm-12 col-md-4">
+                                    @*  *@
+                                    <img class="profile" src="@item.Icon" style="margin-bottom: 10px;">
+                                </div>
+                                <div class="col-sm-12 col-md-8">
+                                    <div class="row align-items-center">
+                                        <div class="col-12">
+                                            <span>@item.FirstName @item.LastName</span> @* ชื่อ - สกุล*@
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-12">
+                                            <span>โทร : @item.Phone</span> @* เบอร์โทร *@
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-12">
+                                            <span>บัญชีธนาคาร : @item.Account</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-items-end">
+                                <div class="col-12" style="margin-top:5px;">
+                                    <span>ไปซื้อที่ : @item.Place</span>
+                                </div>
+                                <div class="col-12">
+                                    <span>
+                                        @{
+                                            var a = DateTime.Now - item.CreatedTime;
+                                            string b = "ช่วงเวลารับฝาก : ";
+                                            b += item.CreatedTime.ToString("(HH:mm - ", new CultureInfo("th-TH"));
+                                            b += item.CreatedTime.AddMinutes(item.MaxTimePose.Value).ToString("HH:mm)", new
+                                            CultureInfo("th-TH"));
+                                        }@b
+                                    </span>
+                                    @* ไปซื้อที่ไหน *@
+                                </div>
+
+                            </div>
+                        </div>
+                        <script>
+                            function status(mainPoseId, status) {
+                                $.ajax({
+                                    url: '@Url.Action("StateMainPose", "MainPose")',
+                                    data: { id: mainPoseId, status: status },
+                                    type: 'POST',
+                                    success: function (result) {
+                                        console.log(result);
+                                        window.location.href = "MainPose"
+                                        
+                                    },
+                                    error: function () {
+                                        console.log('Error occurred while confirming comment.');
+                                    }
+                                });
+                                
+                            } 
+
+                        </script>
+                        <script>
+                            if(document.getElementById("status-@item.Id-Post").innerText == "รอ"){
+                                document.getElementById("wait-btn-@item.Id").checked = true;
+                                if(document.getElementById("wait-btn-@item.Id").value === "other"){
+                                    document.getElementById("wait-btn-@item.Id").disabled = false;
+                                    document.getElementById("process-btn-@item.Id").disabled = true;
+                                    document.getElementById("finish-btn-@item.Id").disabled = true;
+                                }
+                                
+                            }else if(document.getElementById("status-@item.Id-Post").innerText == "กำลังไปส่ง"){
+                                document.getElementById("process-btn-@item.Id").checked = true;
+                                if(document.getElementById("process-btn-@item.Id").value === "other"){
+                                    document.getElementById("wait-btn-@item.Id").disabled = true;
+                                    document.getElementById("process-btn-@item.Id").disabled = false;
+                                    document.getElementById("finish-btn-@item.Id").disabled = true;
+                                }
+                            }else{
+                                 document.getElementById("finish-btn-@item.Id").checked = true;
+                                 if(document.getElementById("finish-btn-@item.Id").value === "other"){
+                                    document.getElementById("wait-btn-@item.Id").disabled = true;
+                                    document.getElementById("process-btn-@item.Id").disabled = true;
+                                    document.getElementById("finish-btn-@item.Id").disabled = false;
+                                }
+                            }       
+                        </script>
+                        <div class="row align-items-center">
+                            <div class="scan col-12">
+                                <span onclick="showQR(@item.Id@item.Id,2)">แสกนจ่าย</span>
+                            </div>
+                        </div>
+                        <div class="QRcode w-60 h-100">
+                            <img id="@item.Id@item.Id" src="@item.Image" alt="" style="display: none;">
+                        </div>
+                        <div id="test1">
+                            <span id="count-@item.Id-comments" onclick="showCom('post-@item.Id-comments')">
+                                ฝากแล้ว @item.Comments.Count / @item.MaxComment คน
+                            </span>
+                        </div>
+                        <div id="post-@item.Id-comments" style="display: none;">
+                            @foreach (var comment in @item.Comments.Take((int)@item.MaxComment))
+                            {
+                                <div class="row">
+                                    <div class="order_box">
+                                        <div class="card p-3 shadow-sm">
+                                            @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name == comment.Email))
+                                            {
+                                                <form asp-controller="MainPose" asp-action="DeleteComment" method="post" class="position-absolute top-0 end-0 p-1">
+                                                    <input type="hidden" name="commentId" value="@comment.Id" />
+                                                    <button type="submit" class="remove">
+                                                        <img src="https://cdn-icons-png.flaticon.com/512/189/189690.png" alt="">
+                                                    </button>
+                                                </form>
+                                            }
+                                            @if (comment.Like == true)
+                                            {
+                                                <div class="likeFrame position-absolute top-0 end-0">
+                                                    <img class="like"
+                                                        src="https://cdn.discordapp.com/attachments/880751147449733150/1101569968333656125/pngwing.com.png"
+                                                        alt="">
+                                                </div>
+                                                <script>
+                                                    document.getElementById("frame").style.border = "3px solid green";
+                                                </script>
+                                            }
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <small style="color: rgb(76, 158, 80);">@comment.FirstName :</small>
+                                                </div>
+                                                <div class="col-9">
+                                                    <small class="font-weight-bold">@comment.CommentText</small>
+                                                </div>
+                                                <div class="col-12 p-2">
+                                                    <img class="slip" id="Image-@comment.Id-comment" src="@comment.Image" alt="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.Identity.Name == item.Email))
+                                    {
+                                        <span style="text-decoration: underline;cursor: pointer;text-align:center;" class="p-1"
+                                        id="confirm-@comment.Id-comments"
+                                        onclick="confirmComment('@comment.Id','@comment.CommentText','@comment.FirstName','@comment.LastName','@comment.Email','@comment.Like',@Model.Item3,'@comment.Image')">ยืนยันการรับฝาก</span>
+                                    }
+                                    
+                                </div>
+                                <script>
+                                    function confirmComment(commentId, CommentText, FirstName, LastName, image, email, confirm, mainPoseId) {
+                                        $.ajax({
+                                            url: '@Url.Action("ConfirmComment", "MainPose")',
+                                            data: { commentId: commentId, CommentText: CommentText, FirstName: FirstName, LastName: LastName, image: image, email: email, confirm: confirm, mainPoseId: mainPoseId },
+                                            type: 'POST',
+                                            success: function (result) {
+                                                console.log(result);
+                                                // Do something with the result, if needed
+                                            },
+                                            error: function () {
+                                                console.log('Error occurred while confirming comment.');
+                                            }
+                                        });
+                                    }
+                                </script>
+                            }
+                        </div>
+                        <script>
+                            function showCom(id){
+                                console.log(id);
+                                var com = document.getElementById(id);
+                                console.log(com.style.display);
+                                if (com.style.display === "none") {
+                                    com.style.display = "block";
+                                } else {
+                                    com.style.display = "none";
+                                }
+                            }
+                        </script>
+                        <hr>
+                        <div class="comment" 
+                            onclick="showComment(@item.Id@item.Id@item.Id,@item.Comments.Count,@item.MaxComment,1,'status-@item.Id-Post')">
+                            ฝากซื้อหน่อย 
+                        </div>
+                        
+                        <div id="postComment">
+                            <div class="form-group row" id="@item.Id@item.Id@item.Id" style="display: none;">
+                                <form asp-controller="MainPose" asp-action="CreateComment" method="post"
+                                    enctype="multipart/form-data">
+                                    <input type="hidden" name="mainPoseId" value="@item.Id" />
+                                    <input type="hidden" name="email" value="@User.Identity.Name" />
+                                    <input type="hidden" name="confirm" value="false" />
+                                    <div class="form-group">
+                                        <label for="first-name">ชื่อ</label>
+                                        <input type="text" id="first-name" name="FirstName" class="form-control" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="last-name">นามสกุล</label>
+                                        <input type="text" id="last-name" name="LastName" class="form-control" required />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="comment-text">รายละเอียด</label>
+                                        <textarea id="comment-text" name="CommentText" class="form-control"
+                                            required></textarea>
+                                    </div>
+                                    <input id="Image2" name="image2" type="hidden" class="form-control"
+                                           placeholder="เลือกไฟล์">
+                                    <div class="form-group">
+                                        <label for="Image2">หลักฐานการชำระเงิน</label>
+                                        <input id="Image2" name="image2" type="file" class="form-control"
+                                            placeholder="เลือกไฟล์">
+                                    </div>
+                                    <br>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                
+                function loadComments(mainPoseId) {
+                    $.ajax({
+                        url: '@Url.Action("GetComments", "MainPose")',
+                        data: { mainPoseId: mainPoseId },
+                        type: 'GET',
+                        success: function (result) {
+                            console.log('success.');
+                            /*$('#post-' + mainPoseId + '-comments').html(result);*/
+                            $('#post-' + mainPoseId + '-comments').html(result);
+                        },
+                        error: function () {
+                            console.log('Error occurred while retrieving new comments.');
+                        }
+                    });
+                    $.ajax({
+                        url: '@Url.Action("CountComments", "MainPose")',
+                        data: { mainPoseId: mainPoseId },
+                        type: 'GET',
+                        success: function (result) {
+                            console.log('success.');
+                            $('#count-' + mainPoseId + '-comments').html(result);
+                        },
+                        error: function () {
+                            console.log('Error occurred while retrieving new comments.');
+                        }
+                    });
+                }
+
+
+
+                // Call loadComments every 1 seconds
+                setInterval(function () {
+                    
+                    loadComments(@item.Id);
+                    
+                }, 1000);
+                
+            </script>
+        }
+
+    </div>
+</div>
+<script src="~/js/post.js"></script>
